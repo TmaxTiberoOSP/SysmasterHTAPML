@@ -1,5 +1,6 @@
 import subprocess
 from pipeline import logger
+import ssh
 
 
 # HTAP 최적화를 위한 정답 (label)을 DDL을 통해 수행합니다.
@@ -17,9 +18,10 @@ def run_ddl_statements(argc, **params):
     return run_sqlplus_command(ddl_script)
 
 
-def database_recovery(ssh):
-    command = "recovery command"
-    success, output = ssh.run_remote_command(ssh, command)
+def database_recovery(ssh_client):
+    command = "cd HTAPML; ls"
+    success, output = ssh.run_remote_command(ssh_client, command)
+    logger.info(output)
     if success:
         logger.info("Recovery tool 성공")
     else:
@@ -29,7 +31,7 @@ def database_recovery(ssh):
 
 def run_sqlplus_command(sql_script):
     try:
-        result = subprocess.run(["sqlplus", "-S", "username/password@host:port/service_name", f"@{sql_script}"],
+        result = subprocess.run(["tbsql", "-S", "username/password@host:port/service_name", f"@{sql_script}"],
                                 check=True, capture_output=True, text=True)
         if result.returncode == 0:
             logger.info(f"{sql_script} 수행 성공")
