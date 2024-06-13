@@ -13,15 +13,15 @@ def run_ddl_statements(argc, **params):
             id NUMBER PRIMARY KEY,
             data VARCHAR2(100)
         );
-        ALTER TABLE example ADD created_date DATE;
+        ALTER TABLE example ADD created_date DATE; 
+        quit;
         """)
     return run_sqlplus_command(ddl_script)
 
 
 def database_recovery(ssh_client):
-    command = "cd HTAPML; ls"
+    command = "cd HTAPML; ./recovery_db.sh"
     success, output = ssh.run_remote_command(ssh_client, command)
-    logger.info(output)
     if success:
         logger.info("Recovery tool 성공")
     else:
@@ -31,8 +31,7 @@ def database_recovery(ssh_client):
 
 def run_sqlplus_command(sql_script):
     try:
-        result = subprocess.run(["tbsql", "-S", "username/password@host:port/service_name", f"@{sql_script}"],
-                                check=True, capture_output=True, text=True)
+        result = subprocess.run(["tbsql", "-s", "sys/tibero@localhost:8629/tibero", f"@{sql_script}"],check=True)
         if result.returncode == 0:
             logger.info(f"{sql_script} 수행 성공")
             return True
