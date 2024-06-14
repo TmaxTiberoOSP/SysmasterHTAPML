@@ -8,6 +8,7 @@ def run_scenario():
     with open(custom_script, "w") as file:
         file.write("""
         SELECT * FROM example;
+        quit;
         """)
     success = tibero.run_sqlplus_command(custom_script)
     if success:
