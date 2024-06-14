@@ -1,4 +1,7 @@
 import subprocess
+
+from dotenv import dotenv_values
+
 from pipeline import logger
 import ssh
 
@@ -31,7 +34,12 @@ def database_recovery(ssh_client):
 
 def run_sqlplus_command(sql_script):
     try:
-        result = subprocess.run(["tbsql", "-s", "sys/tibero@localhost:8629/tibero", f"@{sql_script}"],check=True)
+        config = dotenv_values(".env")
+        db_address = config.get("DB_ADDRESS")
+        db_username = config.get("DB_USERNAME")
+        db_password = config.get("DB_PASSWORD")
+        db_service = config.get("DB_SERVICE")
+        result = subprocess.run(["tbsql", "-s", f"{db_username}/{db_password}@{db_address}:8629/{db_service}", f"@{sql_script}"],check=True)
         if result.returncode == 0:
             logger.info(f"{sql_script} 수행 성공")
             return True
