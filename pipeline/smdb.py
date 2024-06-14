@@ -4,7 +4,7 @@ from pipeline import logger
 
 def run_docker_compose():
     try:
-        result = subprocess.run(["docker-compose", "-f", "docker-compose.yml", "up", "-d"], check=True)
+        result = subprocess.run(["/root/HTAPML/SysmasterHTAPML/release/sysmaster-db","up"], check=True)
         if result.returncode == 0:
             logger.info("docker-compose 실행 성공")
             return True
