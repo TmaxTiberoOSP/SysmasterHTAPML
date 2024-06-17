@@ -1,5 +1,8 @@
+from datetime import datetime
 import subprocess
+
 from pipeline import logger
+import psycopg2
 
 
 def run_docker_compose():
@@ -21,7 +24,18 @@ def run_docker_compose():
 # 2. 현재 세팅값 설정을 저장하는 코드 작성.
 def export_training_dataset():
     try:
-        logger.info("모니터링 데이터 저장 성공")
+        connection = psycopg2.connect("host=localhost dbname=repodb user=sysmaster password=sysmaster port=15432")
+        cur = connection.cursor()
+        filename = datetime.now().replace(microsecond=0)
+        sql = "COPY db_event_session FROM STDIN DELIMITER ',' CSV"
+        with open(f"/root/HTAPML/SysmasterHTAPML/data/{filename}.csv", "a+") as file:
+            cur.copy_expert(sql, file)
+        connection.commit()
+        cur.execute(sql)
+        print(cur.fetchall())
+        logger.info(f"모니터링 데이터 저장 성공: {filename}")
+        cur.close()
+        connection.close()
         return True
     except Exception as e:
         logger.error(f"모니터링 데이터 저장 실패: {e}")
