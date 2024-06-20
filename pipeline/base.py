@@ -15,7 +15,8 @@ def main_pipeline():
     hostname = config.get("HOSTNAME")
     username = config.get("USERNAME")
     password = config.get("PASSWORD")
-
+    filepath =config.get("FILEPATH")
+    conn_string = config.get("CONNECTION_STRING")
     params = {
     }
 
@@ -36,7 +37,7 @@ def main_pipeline():
         if not load.run_scenario():
             break
 
-        if not smdb.export_training_dataset():
+        if not smdb.export_training_dataset(conn_string,filepath):
             break
 
         sleep_time = config.get("SLEEP_TIME") is None and 60 or int(config.get("SLEEP_TIME"))

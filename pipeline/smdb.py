@@ -22,17 +22,16 @@ def run_docker_compose():
 # Sysmaster 에 수집된 데이터 및 Labeling 데이터를 저장하는 함수.
 # 1. PostgreSQL 에 저장되어 있는 데이터를 가져와서 파일로 저장하는 코드 작성.
 # 2. 현재 세팅값 설정을 저장하는 코드 작성.
-def export_training_dataset():
+def export_training_dataset(conn_string,filepath):
     try:
-        connection = psycopg2.connect("host=localhost dbname=repodb user=sysmaster password=sysmaster port=15432")
+        connection = psycopg2.connect(conn_string)
         cur = connection.cursor()
         filename = datetime.now().replace(microsecond=0)
-        sql = "COPY db_event_session FROM STDIN DELIMITER ',' CSV"
-        with open(f"/root/HTAPML/SysmasterHTAPML/data/{filename}.csv", "a+") as file:
-            cur.copy_expert(sql, file)
+        copy_sql = f"COPY db_event_session TO STDOUT WITH CSV HEADER"
+        with open(f"{filepath}{filename}.csv", 'w') as file:
+            cur.copy_expert(copy_sql, file)
         connection.commit()
-        cur.execute(sql)
-        print(cur.fetchall())
+
         logger.info(f"모니터링 데이터 저장 성공: {filename}")
         cur.close()
         connection.close()
