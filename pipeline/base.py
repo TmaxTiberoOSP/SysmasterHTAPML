@@ -17,6 +17,7 @@ def main_pipeline():
     password = config.get("PASSWORD")
     filepath =config.get("FILEPATH")
     conn_string = config.get("CONNECTION_STRING")
+    tpch_max_size = int(config.get("TPCH_MAX_SIZE"))
     params = {
     }
 
@@ -34,7 +35,10 @@ def main_pipeline():
         if not smdb.run_docker_compose():
             break
 
-        if not load.run_scenario():
+        if not load.run_tpch(tpch_max_size):
+            break
+
+        if not load.run_tpcc():
             break
 
         if not smdb.export_training_dataset(conn_string,filepath):
