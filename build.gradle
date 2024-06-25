@@ -20,6 +20,9 @@ dependencies {
 
     implementation "org.scala-lang:scala-library:2.12.10" // Scala library compatible with your Scala binary version
 
+    implementation 'org.slf4j:slf4j-api:1.7.36'  // Use the latest stable version
+    implementation 'ch.qos.logback:logback-classic:1.2.11'  // Use the latest stable version
+
     // XGBoost dependencies
     implementation "ml.dmlc:xgboost4j_${scalaBinaryVersion}:${xgboostVersion}"
     implementation "ml.dmlc:xgboost4j-spark_${scalaBinaryVersion}:${xgboostVersion}"
