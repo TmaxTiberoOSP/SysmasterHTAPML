@@ -23,57 +23,69 @@ def run_docker_compose():
 # 1. PostgreSQL 에 저장되어 있는 데이터를 가져와서 파일로 저장하는 코드 작성.
 # 2. 현재 세팅값 설정을 저장하는 코드 작성.
 def export_training_dataset(conn_string,filepath):
-    we_tables = ["WE_BUF_WAIT", "WE_BUF_WRITE", "WE_BUF_FREE", "WE_LGWR_ARCHIVE", "WE_LGWR_LNW", "WE_LOG_FLUSH_COMMIT",
-                 "WE_TSN_SYNC_COMMIT", "WE_LOG_FLUSH_SPACE", "WE_LOG_FLUSH_REQ", "WE_CKPT_WAIT", "WE_RT_INFLOW_WAIT",
-                 "WE_SMR_REPLAY", "WE_PE_COMM", "WE_PE_ENQ", "WE_PE_DEQ", "WE_ACF_MTX_RW", "WE_SVC_TX", "WE_TX_RECO_SUSPEND",
-                 "WE_CWS_AST", "WE_CCC_AST_CR", "WE_CCC_AST_CUR", "WE_CR_BUF_BUSY_LOCAL", "WE_CR_BUF_BUSY_GLOBAL",
-                 "WE_CUR_BUF_BUSY_LOCAL", "WE_CUR_BUF_BUSY_GLOBAL", "WE_GV_REQ", "WE_GV_REPLY", "WE_SEARCH_SPACE_REPLY",
-                 "WE_DDL_CSR_INVAL", "WE_DDL_CHANGE_UNDO_TS", "WE_PEQ", "WE_ALERT", "WE_WLOCK_CF", "WE_WLOCK_TX",
-                 "WE_WLOCK_ST_SGMT", "WE_WLOCK_SPLIT", "WE_WLOCK_DML", "WE_WLOCK_USER", "WE_WLOCK_DD_OBJ", "WE_WLOCK_DD_USER",
-                 "WE_WLOCK_DD_SGMT", "WE_WLOCK_DD_TS", "WE_WLOCK_DD_TS_REF", "WE_WLOCK_DD_OBJAUTH", "WE_WLOCK_DD_SYSAUTH",
-                 "WE_WLOCK_DD_PSMIR", "WE_WLOCK_DD_PENDING_TX", "WE_WLOCK_DD_PARTOBJ", "WE_WLOCK_SEQ_GET_NEXTVAL",
-                 "WE_WLOCK_DDL_CREATE_TS", "WE_WLOCK_DDL_CREATE_DF", "WE_WLOCK_DDL_CREATE_CON", "WE_WLOCK_XA_BUCKET",
-                 "WE_WLOCK_XA_GLB", "WE_WLOCK_XA_BCH", "WE_WLOCK_XA_VT", "WE_WLOCK_DX", "WE_WLOCK_IR", "WE_WLOCK_TEMP_GRANULE",
-                 "WE_WLOCK_CLEANUP_DROPPED_SGMT", "WE_WLOCK_MV_RFSH", "WE_WLOCK_DDL_RECOMPILE", "WE_WLOCK_ASYSRECOMPILE",
-                 "WE_WLOCK_DBMS_PIPE_LIST", "WE_WLOCK_DP_TEMP_SGMT", "WE_WLOCK_STANDBY", "WE_WLOCK_SMR", "WE_WLOCK_LNR_REVERSE_SYNC",
-                 "WE_WLOCK_AUTO_COALESCE", "WE_WLOCK_XTB_TIMEOUT_CHECK", "WE_WLOCK_REVALIDATE_OBJ", "WE_WLOCK_UPDATE_USER_STATUS",
-                 "WE_WLOCK_L1_LOCAL_CACHE", "WE_WLOCK_SC_LRU_CACHE_OUT", "WE_WLOCK_DBMS_LOCK", "WE_WLOCK_BITMAP_INDEX", "WE_WLOCK_BCT",
-                 "WE_WLOCK_IMCS", "WE_WLOCK_IMCS_PRIORITY_POPULATE", "WE_WLOCK_LGWR_STATUS", "WE_WLOCK_FB", "WE_WLOCK_RMGR",
-                 "WE_WLOCK_TS_INVALIDATE", "WE_WLOCK_CF_TS", "WE_WLOCK_JOB", "WE_WLOCK_SESSKEY", "WE_WLOCK_CONTEXT_INDEX",
-                 "WE_WLOCK_RT_STANDBY", "WE_WLOCK_USGMT", "WE_WLOCK_RSRC", "WE_WLOCK_SETPARAM", "WE_WLOCK_IMT", "WE_WLOCK_EXPAND_RSB",
-                 "WE_WLOCK_EXPAND_LKBSET", "WE_JC_BUF_DISK_READ", "WE_JC_BUF_DISK_READM", "WE_JC_SSGMT_READ_TIME",
-                 "WE_JC_SSGMT_WRITE_TIME", "WE_JC_BUF_DISK_READM_PGA", "WE_JC_DPBUF_WAIT_WRITE", "WE_JC_REDO_SLEEP",
-                 "WE_JC_FDPOOL_INVL", "WE_JC_FARC_WRITE", "WE_SPIN_BUF_BUCKET", "WE_SPIN_BUF_WS", "WE_SPIN_SHP_ALLOC_LC",
-                 "WE_SPIN_SHP_ALLOC_DD", "WE_SPIN_SHP_ALLOC_MISC", "WE_SPIN_SHP_ALLOC_SLAB", "WE_SPIN_SHP_ALLOC_SUPER",
-                 "WE_SPIN_ALLOC_LRU"]
-    stat_tables = ["BLOCK_DISK_READ", "MULTI_BLOCK_DISK_READ", "CONSISTENT_MULTI_BLOCK_GETS", "CONSISTENT_BLOCK_GETS",
-                   "CONSISTENT_BLOCK_GETS_READONLY_PIN", "CONSISTENT_BLOCK_GETS_EXAMINE", "CONSISTENT_BLOCK_GETS_EXAMINE_NOWAIT",
-                   "CURRENT_BLOCK_GETS", "CURRENT_BLOCK_GETS_NOWAIT", "CURRENT_BLOCK_GETS_EXAMINE", "CURRENT_BLOCK_GETS_EXAMINE_NOWAIT",
-                   "TOTAL_PARSE_COUNT", "HARD_PARSE_COUNT", "REDO_ENTRIES", "REDO_LOG_SIZE", "REDO_WRITE", "REDO_WRITE_MULTI",
-                   "PHYSICAL_WRITE", "REQ_SERVICE_TIME", "DB_CPU_TIME", "USER_ROLLBACKS", "EXECUTE_COUNT",
-                   "NUMBER_OF_WAIT_LOCKS_GRANTED_FROM_THE_MASTER", "TOTAL_ROUND_TRIP_TIMES_TO_GRANT_WAIT_LOCK", "CURRENT_BLOCK_RECEIVED",
-                   "CURRENT_BLOCK_RECEIVED_RTT", "CR_BLOCK_RECEIVED", "CR_BLOCK_RECEIVED_RTT", "CURRENT_BLOCK_SEND",
-                   "CURRENT_BLOCK_SEND_FAIL", "CURRENT_BLOCK_SEND_TIME", "CR_BLOCK_SEND", "CR_BLOCK_SEND_FAIL", "CR_BLOCK_SEND_TIME",
-                   "INC_MESSAGES_RECEIVED", "INC_MESSAGES_RECEIVED_TIME", "INC_MESSAGES_RECEIVED_SIZE", "INC_MESSAGES_RECEIVED_BY_RETRY",
-                   "INC_MESSAGES_RECEIVED_BY_RETRY_DELAY_TIME", "INC_MESSAGES_RECEIVED_BY_BATCH", "INC_MESSAGES_RECEIVED_BY_BATCH_TIME",
-                   "INC_PACKETS_RECEIVED", "INC_PACKETS_RECEIVED_SIZE", "INC_MESSAGES_SENT", "INC_MESSAGES_SENT_TIME",
-                   "INC_MESSAGES_SENT_SIZE", "INC_MESSAGES_SENT_BY_RETRY", "INC_MESSAGES_SENT_BY_RETRY_DELAY_TIME",
-                   "INC_MESSAGES_SENT_BY_BATCH", "INC_MESSAGES_SENT_BY_BATCH_SUCCESS_MESSAGES", "INC_MESSAGES_SENT_FROM_SEND_QUEUE_TIME",
-                   "INC_PACKETS_SENT", "INC_PACKETS_SENT_SIZE"]
+    we_columns = ["we_buf_wait", "we_buf_write", "we_buf_free", "we_lgwr_archive", "we_lgwr_lnw", "we_log_flush_commit",
+                  "we_tsn_sync_commit", "we_log_flush_space", "we_log_flush_req", "we_ckpt_wait", "we_rt_inflow_wait",
+                  "we_smr_replay", "we_pe_comm", "we_pe_enq", "we_pe_deq", "we_acf_mtx_rw", "we_svc_tx", "we_tx_reco_suspend",
+                  "we_cws_ast", "we_ccc_ast_cr", "we_ccc_ast_cur", "we_cr_buf_busy_local", "we_cr_buf_busy_global",
+                  "we_cur_buf_busy_local", "we_cur_buf_busy_global", "we_gv_req", "we_gv_reply", "we_search_space_reply",
+                  "we_ddl_csr_inval", "we_ddl_change_undo_ts", "we_peq", "we_alert", "we_wlock_cf", "we_wlock_tx",
+                  "we_wlock_st_sgmt", "we_wlock_split", "we_wlock_dml", "we_wlock_user", "we_wlock_dd_obj", "we_wlock_dd_user",
+                  "we_wlock_dd_sgmt", "we_wlock_dd_ts", "we_wlock_dd_ts_ref", "we_wlock_dd_objauth", "we_wlock_dd_sysauth",
+                  "we_wlock_dd_psmir", "we_wlock_dd_pending_tx", "we_wlock_dd_partobj", "we_wlock_seq_get_nextval",
+                  "we_wlock_ddl_create_ts", "we_wlock_ddl_create_df", "we_wlock_ddl_create_con", "we_wlock_xa_bucket",
+                  "we_wlock_xa_glb", "we_wlock_xa_bch", "we_wlock_xa_vt", "we_wlock_dx", "we_wlock_ir", "we_wlock_temp_granule",
+                  "we_wlock_cleanup_dropped_sgmt", "we_wlock_mv_rfsh", "we_wlock_ddl_recompile", "we_wlock_asysrecompile",
+                  "we_wlock_dbms_pipe_list", "we_wlock_dp_temp_sgmt", "we_wlock_standby", "we_wlock_smr", "we_wlock_lnr_reverse_sync",
+                  "we_wlock_auto_coalesce", "we_wlock_xtb_timeout_check", "we_wlock_revalidate_obj", "we_wlock_update_user_status",
+                  "we_wlock_l1_local_cache", "we_wlock_sc_lru_cache_out", "we_wlock_dbms_lock", "we_wlock_bitmap_index", "we_wlock_bct",
+                  "we_wlock_imcs", "we_wlock_imcs_priority_populate", "we_wlock_lgwr_status", "we_wlock_fb", "we_wlock_rmgr",
+                  "we_wlock_ts_invalidate", "we_wlock_cf_ts", "we_wlock_job", "we_wlock_sesskey", "we_wlock_context_index",
+                  "we_wlock_rt_standby", "we_wlock_usgmt", "we_wlock_rsrc", "we_wlock_setparam", "we_wlock_imt", "we_wlock_expand_rsb",
+                  "we_wlock_expand_lkbset", "we_jc_buf_disk_read", "we_jc_buf_disk_readm", "we_jc_ssgmt_read_time",
+                  "we_jc_ssgmt_write_time", "we_jc_buf_disk_readm_pga", "we_jc_dpbuf_wait_write", "we_jc_redo_sleep",
+                  "we_jc_fdpool_invl", "we_jc_farc_write", "we_spin_buf_bucket", "we_spin_buf_ws", "we_spin_shp_alloc_lc",
+                  "we_spin_shp_alloc_dd", "we_spin_shp_alloc_misc", "we_spin_shp_alloc_slab", "we_spin_shp_alloc_super",
+                  "we_spin_alloc_lru"]
+    stat_columns = ["block_disk_read", "multi_block_disk_read", "consistent_multi_block_gets", "consistent_block_gets",
+                    "consistent_block_gets_readonly_pin", "consistent_block_gets_examine", "consistent_block_gets_examine_nowait",
+                    "current_block_gets", "current_block_gets_nowait", "current_block_gets_examine", "current_block_gets_examine_nowait",
+                    "total_parse_count", "hard_parse_count", "redo_entries", "redo_log_size", "redo_write", "redo_write_multi",
+                    "physical_write", "req_service_time", "db_cpu_time", "user_rollbacks", "execute_count",
+                    "number_of_wait_locks_granted_from_the_master", "total_round_trip_times_to_grant_wait_lock", "current_block_received",
+                    "current_block_received_rtt", "cr_block_received", "cr_block_received_rtt", "current_block_send",
+                    "current_block_send_fail", "current_block_send_time", "cr_block_send", "cr_block_send_fail", "cr_block_send_time",
+                    "inc_messages_received", "inc_messages_received_time", "inc_messages_received_size", "inc_messages_received_by_retry",
+                    "inc_messages_received_by_retry_delay_time", "inc_messages_received_by_batch", "inc_messages_received_by_batch_time",
+                    "inc_packets_received", "inc_packets_received_size", "inc_messages_sent", "inc_messages_sent_time",
+                    "inc_messages_sent_size", "inc_messages_sent_by_retry", "inc_messages_sent_by_retry_delay_time",
+                    "inc_messages_sent_by_batch", "inc_messages_sent_by_batch_success_messages", "inc_messages_sent_from_send_queue_time",
+                    "inc_packets_sent", "inc_packets_sent_size"]
+    memory_columns = ["sga_usage", "pga_usage", "physical_reads", "logical_reads", "buffer_cache_hit"]
     try:
         connection = psycopg2.connect(conn_string)
         cur = connection.cursor()
+
         filename = datetime.now().replace(microsecond=0)
+        colums = stat_columns + we_columns + memory_columns
 
         with open(f"{filepath}{filename}.csv", 'w') as file:
-            for we_table in we_tables:
-                cur.execute(f"SELECT * FROM information_schema.tables WHERE table_name='{we_table}';")
-                result = cur.fetchall()
-                file.write(f"{we_table}\n{str(result)}\n")
-            for stat_table in stat_tables:
-                cur.execute(f"SELECT * FROM information_schema.tables WHERE table_name='{stat_table}';")
-                result = cur.fetchall()
-                file.write(f"{stat_table}\n{str(result)}\n")
+            for col in colums:
+                cur.execute(f"""
+                   SELECT table_name 
+                   FROM information_schema.columns 
+                   WHERE table_name= (select table_name from information_schema.columns where column_name='{col}' and (table_name like 'db_stat%' or table_name like 'db_event%' or table_name like 'db_memory%') and table_name !~ '[0-9]' limit 1) limit 1;
+                """)
+                table = cur.fetchone()
+                result=[]
+                if table:
+                    cur.execute(f"SELECT {col} FROM public.{table[0]}")
+                    tuples = cur.fetchall()
+                    val_list = []
+                    for tup in tuples:
+                        val = str(tup[0])
+                        val_list.append(val)
+                    result = ','.join(val_list)
+                file.write(f"{col}\n{result}\n")
         connection.commit()
 
         logger.info(f"모니터링 데이터 저장 성공: {filename}")
