@@ -579,7 +579,6 @@ WHERE t.name='%s' AND c.name='%s'
         statement.executeQuery("SELECT SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') FROM DUAL");
     rs.next();
     String schema = rs.getString(1);
-    System.out.println("schema = " + schema);
 
     Map<String, Table> tables = new HashMap<>();
 
