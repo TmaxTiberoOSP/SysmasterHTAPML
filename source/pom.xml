@@ -33,6 +33,14 @@
         -->
     </properties>
 
+    <repositories>
+        <repository>
+            <id>local-repository</id>
+            <name>local repository</name>
+            <url>file://${project.basedir}/lib</url>
+        </repository>
+    </repositories>
+
     <scm>
         <connection>scm:git:git@github.com:cmu-db/benchbase.git</connection>
         <url>https://github.com/cmu-db/benchbase</url>
@@ -41,6 +49,7 @@
     </scm>
 
     <distributionManagement>
+
         <repository>
             <id>github</id>
             <name>GitHub cmu-db/benchbase Apache Maven Packages</name>
@@ -342,6 +351,15 @@
             <artifactId>commons-compiler</artifactId>
             <version>3.1.12</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/jdbc.tibero/tibero -->
+        <dependency>
+            <groupId>com.tmax.tibero.jdbc.TbDriver</groupId>
+            <artifactId>tibero</artifactId>
+            <version>7</version>
+        </dependency>
+
+
 
         <dependency>
             <!-- Used by the templated benchmark for internal compiling proceedures. -->
