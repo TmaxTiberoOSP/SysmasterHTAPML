@@ -9,17 +9,8 @@ import ssh
 # HTAP 최적화를 위한 정답 (label)을 DDL을 통해 수행합니다.
 # DDL 스크립트를 파일로 작성하여 실행합니다.
 def run_ddl_statements(argc, **params):
-    ddl_script = "ddl_statements.sql"
-    with open(ddl_script, "w") as file:
-        file.write("""
-        CREATE TABLE example (
-            id NUMBER PRIMARY KEY,
-            data VARCHAR2(100)
-        );
-        ALTER TABLE example ADD created_date DATE; 
-        quit;
-        """)
-    return run_sqlplus_command(ddl_script)
+    with open('ddl_statements.sql','w') as ddl_script:
+        return run_sqlplus_command(ddl_script)
 
 
 def database_recovery(ssh_client):
@@ -29,6 +20,17 @@ def database_recovery(ssh_client):
         logger.info("Recovery tool 성공")
     else:
         logger.error(f"Recovery 실패: {output}")
+    return success
+
+# tpmagent 를 어떻게 원격으로 킬 것인가?
+def run_tpmagent(ssh_client):
+    command = "export TB_SID=tibero; cd HTAPML/tpmagent_dist; ./tpmagent"
+    success, output = ssh.run_remote_command(ssh_client, command)
+    if success:
+        print(output)
+        logger.info("Tpmagent 실행 성공")
+    else:
+        logger.error(f"Tpmagent 실행 실패: {output}")
     return success
 
 
