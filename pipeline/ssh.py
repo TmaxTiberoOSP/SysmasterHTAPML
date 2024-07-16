@@ -1,3 +1,5 @@
+import time
+
 import paramiko
 from pipeline import logger
 
@@ -15,7 +17,7 @@ def connect(hostname, username, password):
 
 def run_remote_command(ssh, command):
     try:
-        stdin, stdout, stderr = ssh.exec_command(command)
+        stdin, stdout, stderr = ssh.exec_command(command, get_pty=True)
         exit_status = stdout.channel.recv_exit_status()
         if exit_status == 0:
             return True, stdout.read().decode('utf-8')

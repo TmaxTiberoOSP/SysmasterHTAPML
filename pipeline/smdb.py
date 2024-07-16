@@ -7,7 +7,7 @@ import psycopg2
 
 def run_docker_compose():
     try:
-        result = subprocess.run(["/root/HTAPML/SysmasterHTAPML/release/sysmaster-db","up"], check=True)
+        result = subprocess.run(["/home/test/release/sysmaster-db","up"], check=True)
         if result.returncode == 0:
             logger.info("docker-compose 실행 성공")
             return True
