@@ -1,7 +1,9 @@
+import os
 import subprocess
 
 import tibero
-from pipeline import logger
+from pipeline import logger, ssh
+
 
 def run_script():
     # TPCC / TPC-H / TPC-DS 등의 벤치마크를 수행하는 코드 작성
@@ -22,6 +24,21 @@ quit;
             return False, None
     else:
         return False, None
+
+def run_benchbase(path):
+    try:
+        result = subprocess.run(["sh","tpcc.sh"],env=os.environ.copy(),cwd=path, check=True)
+        print(result)
+        return False
+        if result.returncode == 0:
+            logger.info("Benchbase TPC-C 실행 성공")
+            return True
+        else:
+            logger.error(f"Benchbase TPC-C 실행 실패: {result.stderr}")
+            return False
+    except Exception as e:
+        logger.error(f"Benchbase TPC-C 실행 실패: {e}")
+        return False
 
 
 if __name__ == "__main__":

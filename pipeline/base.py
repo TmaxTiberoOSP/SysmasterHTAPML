@@ -18,6 +18,7 @@ def main_pipeline():
     filepath =config.get("FILEPATH")
     dockerpath = config.get("DOCKER_PATH")
     conn_string = config.get("CONNECTION_STRING")
+    benchpath = config.get("BENCH_PATH")
     params = {
     }
 
@@ -35,7 +36,7 @@ def main_pipeline():
         if not smdb.run_docker_compose(dockerpath):
             break
 
-        if not load.run_script():
+        if not load.run_benchbase(benchpath):
             break
 
         time.sleep(60)
