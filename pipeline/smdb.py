@@ -5,9 +5,10 @@ from pipeline import logger
 import psycopg2
 
 
-def run_docker_compose():
+def run_docker_compose(dockerpath):
     try:
-        result = subprocess.run(["/home/test/release/sysmaster-db","up"], check=True)
+        result = subprocess.run(["sudo","docker","compose","-f",f"{dockerpath}/docker-compose.yml","up","-d"], check=True)
+
         if result.returncode == 0:
             logger.info("docker-compose 실행 성공")
             return True
@@ -18,6 +19,32 @@ def run_docker_compose():
         logger.error(f"docker-compose 실행 실패: {e}")
         return False
 
+def down_docker_compose(dockerpath):
+    try:
+        result = subprocess.run(["sudo","docker","compose","-f",f"{dockerpath}/docker-compose.yml","down"], check=True)
+        if result.returncode == 0:
+            logger.info("docker-compose 종료 성공")
+            clean_docker_db(dockerpath)
+            return True
+        else:
+            logger.error(f"docker-compose 종료 실패: {result.stderr}")
+            return False
+    except Exception as e:
+        logger.error(f"docker-compose 종료 실패: {e}")
+        return False
+
+def clean_docker_db(dockerpath):
+    try:
+        result = subprocess.run([f"rm -rf {dockerpath}/repo {dockerpath}/meta {dockerpath}/logs/repodb {dockerpath}/logs/metadb"], check=True)
+        if result.returncode == 0:
+            logger.info("postgre db clean 성공")
+            return True
+        else:
+            logger.error(f"postgre db clean 실패: {result.stderr}")
+            return False
+    except Exception as e:
+        logger.error(f"postgre db clean 실패: {e}")
+        return False
 
 # Sysmaster 에 수집된 데이터 및 Labeling 데이터를 저장하는 함수.
 # 1. PostgreSQL 에 저장되어 있는 데이터를 가져와서 파일로 저장하는 코드 작성.

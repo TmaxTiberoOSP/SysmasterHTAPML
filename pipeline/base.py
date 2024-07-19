@@ -16,6 +16,7 @@ def main_pipeline():
     username = config.get("USERNAME")
     password = config.get("PASSWORD")
     filepath =config.get("FILEPATH")
+    dockerpath = config.get("DOCKER_PATH")
     conn_string = config.get("CONNECTION_STRING")
     params = {
     }
@@ -31,17 +32,23 @@ def main_pipeline():
         if not tibero.run_ddl_statements(params):
             break
 
-        if not smdb.run_docker_compose():
+        if not smdb.run_docker_compose(dockerpath):
             break
 
         if not load.run_script():
             break
 
+        time.sleep(60)
+
         if not smdb.export_training_dataset(conn_string,filepath):
             break
 
-        sleep_time = config.get("SLEEP_TIME") is None and 60 or int(config.get("SLEEP_TIME"))
-        time.sleep(sleep_time)
+        if not smdb.down_docker_compose(dockerpath):
+            break
+
+
+        #sleep_time = config.get("SLEEP_TIME") is None and 60 or int(config.get("SLEEP_TIME"))
+        #time.sleep(sleep_time)
 
 
 if __name__ == "__main__":
