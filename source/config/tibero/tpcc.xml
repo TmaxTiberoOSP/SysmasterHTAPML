@@ -4,7 +4,7 @@
     <!-- Connection details -->
     <type>ORACLE</type>
     <driver>com.tmax.tibero.jdbc.TbDriver</driver>
-    <url>jdbc:tibero:thin:@192.168.51.228:8629:tibero</url>
+    <url>jdbc:tibero:thin:@192.168.51.228:8629:tac</url>
     <username>tibero</username>
     <password>tmax</password>
     <reconnectOnConnectionFailure>true</reconnectOnConnectionFailure>
