@@ -19,6 +19,7 @@ def main_pipeline():
     dockerpath = config.get("DOCKER_PATH")
     conn_string = config.get("CONNECTION_STRING")
     benchpath = config.get("BENCH_PATH")
+    size = config.get("BUFFERCACHE_SIZE")
     params = {
     }
 
@@ -28,6 +29,9 @@ def main_pipeline():
             break
 
         if not tibero.database_recovery(connection):
+            break
+
+        if not tibero.change_buffer_cache_size(size):
             break
 
         if not tibero.run_ddl_statements(params):

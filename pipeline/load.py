@@ -29,7 +29,7 @@ def run_benchbase(path):
     try:
         result = subprocess.run(["sh","tpcc.sh"],env=os.environ.copy(),cwd=path, check=True)
         print(result)
-        return False
+
         if result.returncode == 0:
             logger.info("Benchbase TPC-C 실행 성공")
             return True

@@ -123,6 +123,5 @@ def export_training_dataset(conn_string,filepath):
         logger.error(f"모니터링 데이터 저장 실패: {e}")
         return False
 
-
 if __name__ == "__main__":
     logger.info("테스트 코드를 여기서 작성하세요")

@@ -4,13 +4,14 @@ from dotenv import dotenv_values
 
 from pipeline import logger
 import ssh
+import requests
 
 
 # HTAP 최적화를 위한 정답 (label)을 DDL을 통해 수행합니다.
 # DDL 스크립트를 파일로 작성하여 실행합니다.
 def run_ddl_statements(argc, **params):
     ddl_script = "ddl_statements.sql"
-    with open(ddl_script, "a") as file:
+    with open(ddl_script, "w") as file:
         file.write("""
         CREATE TABLE example (
             id NUMBER PRIMARY KEY,
@@ -19,8 +20,19 @@ def run_ddl_statements(argc, **params):
         ALTER TABLE example ADD created_date DATE;
         quit;
         """)
+        file.close()
         return run_sqlplus_command(ddl_script)
 
+def change_buffer_cache_size(size):
+    ddl_script = "buffer_cache_statements.sql"
+
+    with open(ddl_script, "w") as file:
+        file.write(f"""
+        ALTER SYSTEM SET DB_CACHE_SIZE_TARGET={size};
+        quit;
+        """)
+    file.close()
+    return run_sqlplus_command(ddl_script)
 
 def database_recovery(ssh_client):
     command = "sh recovery_db.sh"
