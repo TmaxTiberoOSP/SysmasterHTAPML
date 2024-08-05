@@ -23,7 +23,7 @@ def main_pipeline():
     params = {
     }
 
-    while True:
+    while True :
         connection = ssh.connect(hostname, username, password)
         if connection is None:
             break
@@ -43,9 +43,10 @@ def main_pipeline():
         if not load.run_benchbase(benchpath):
             break
 
-        time.sleep(60)
-
         if not smdb.export_training_dataset(conn_string,filepath):
+            break
+
+        if not smdb.clean_postgre_db(conn_string):
             break
 
         if not smdb.down_docker_compose(dockerpath):
