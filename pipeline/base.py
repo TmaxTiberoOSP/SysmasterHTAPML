@@ -23,7 +23,8 @@ def main_pipeline():
     params = {
     }
 
-    while True :
+    quit_pipeline = False
+    while not quit_pipeline:
         connection = ssh.connect(hostname, username, password)
         if connection is None:
             break
@@ -34,8 +35,8 @@ def main_pipeline():
         if not tibero.change_buffer_cache_size(size):
             break
 
-        if not tibero.run_ddl_statements(params):
-            break
+#        if not tibero.run_ddl_statements(params):
+#            break
 
         if not smdb.run_docker_compose(dockerpath):
             break
@@ -43,7 +44,7 @@ def main_pipeline():
         if not load.run_benchbase(benchpath):
             break
 
-        if not smdb.export_training_dataset(conn_string,filepath):
+        if not smdb.export_training_dataset(conn_string, filepath, test_name="sample"):
             break
 
         if not smdb.clean_postgre_db(conn_string):
@@ -52,9 +53,8 @@ def main_pipeline():
         if not smdb.down_docker_compose(dockerpath):
             break
 
-
-        #sleep_time = config.get("SLEEP_TIME") is None and 60 or int(config.get("SLEEP_TIME"))
-        #time.sleep(sleep_time)
+        logger.info("Loop Complete")
+        quit_pipeline = True
 
 
 if __name__ == "__main__":

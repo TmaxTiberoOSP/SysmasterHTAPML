@@ -1,10 +1,8 @@
 import subprocess
 
 from dotenv import dotenv_values
-
 from pipeline import logger
 import ssh
-import requests
 
 
 # HTAP 최적화를 위한 정답 (label)을 DDL을 통해 수행합니다.
@@ -23,6 +21,7 @@ def run_ddl_statements(argc, **params):
         file.close()
         return run_sqlplus_command(ddl_script)
 
+
 def change_buffer_cache_size(size):
     ddl_script = "buffer_cache_statements.sql"
 
@@ -31,11 +30,15 @@ def change_buffer_cache_size(size):
         ALTER SYSTEM SET DB_CACHE_SIZE_TARGET={size};
         quit;
         """)
+
     file.close()
     return run_sqlplus_command(ddl_script)
 
+
 def database_recovery(ssh_client):
     command = "sh recovery_db.sh"
+    logger.info(f"database_recovery()")
+
     success, output = ssh.run_remote_command(ssh_client, command)
     if success:
         logger.info("Recovery tool 성공")
@@ -43,8 +46,9 @@ def database_recovery(ssh_client):
         logger.error(f"Recovery 실패: {output}")
     return success
 
-# tpmagent 를 어떻게 원격으로 킬 것인가?
+
 def run_tpmagent(ssh_client):
+    logger.info(f"run_tpmagent(ssh_client={ssh_client})")
     command = "export TB_SID=tibero; cd HTAPML/tpmagent_dist; ./tpmagent"
     success, output = ssh.run_remote_command(ssh_client, command)
     if success:
@@ -56,13 +60,15 @@ def run_tpmagent(ssh_client):
 
 
 def run_sqlplus_command(sql_script):
+    logger.info(f"run_sqlplus_command(sql_script={sql_script})")
     try:
         config = dotenv_values(".env")
         db_address = config.get("DB_ADDRESS")
         db_username = config.get("DB_USERNAME")
         db_password = config.get("DB_PASSWORD")
         db_service = config.get("DB_SERVICE")
-        result = subprocess.run(["tbsql", "-s", f"{db_username}/{db_password}@{db_address}:8620/{db_service}", f"@{sql_script}"],check=True)
+        result = subprocess.run(["tbsql", "-s", f"{db_username}/{db_password}@{db_address}:8620/{db_service}",
+                                 f"@{sql_script}"], check=True)
         if result.returncode == 0:
             logger.info(f"{sql_script} 수행 성공")
             return True
@@ -73,6 +79,25 @@ def run_sqlplus_command(sql_script):
         logger.error(f"{sql_script} 수행 실패: {e}")
         return False
 
+def check_connection():
+    try:
+        config = dotenv_values(".env")
+        db_address = config.get("DB_ADDRESS")
+        db_username = config.get("DB_USERNAME")
+        db_password = config.get("DB_PASSWORD")
+        db_service = config.get("DB_SERVICE")
+        result = subprocess.run(["tbsql", "-s", f"{db_username}/{db_password}@{db_address}:8620/{db_service}"], check=True)
+
+        if result.returncode == 0:
+            logger.info(f"Connection check 수행 성공")
+            return True
+        else:
+            logger.error(f"Connection check 수행 실패: {result.stderr}")
+            return False
+    except Exception as e:
+        logger.error(f"Connection check 수행 실패:{e}")
+        return False
 
 if __name__ == "__main__":
     logger.info("테스트 코드를 작성하세요")
+    check_connection()

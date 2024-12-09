@@ -1,5 +1,3 @@
-import time
-
 import paramiko
 from pipeline import logger
 
@@ -9,11 +7,11 @@ def connect(hostname, username, password):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(hostname, username=username, password=password)
+        logger.info(f"SSH 연결 성공 at {username}@{hostname}")
         return ssh
     except Exception as e:
         logger.error(f"SSH 연결 실패: {e}")
         return None
-
 
 def run_remote_command(ssh, command):
     try:
