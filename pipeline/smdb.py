@@ -4,12 +4,12 @@ import subprocess
 
 from pipeline import logger
 import psycopg2
-import sysmaster_table
+from sysmaster_table import SysmasterTable
 from datetime import datetime, timedelta, timezone
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-
+sysmaster_table = SysmasterTable()
 
 def run_docker_compose(dockerpath):
     try:
@@ -71,12 +71,13 @@ def clean_postgre_db(conn_string):
 
         connection.commit()
         logger.info(f"postgre 초기화 성공")
-        schema_file_path = os.path.join(script_dir, "schema.sql")
-        with open(schema_file_path, "r") as schema_file:
-            schema_sql = schema_file.read()
 
+        # schema_file_path = os.path.join(script_dir, "schema.sql")
+        # with open(schema_file_path, "r") as schema_file:
+        # schema_sql = schema_file.read()
         # 읽은 SQL 스크립트를 실행
-        cur.execute(schema_sql)
+        # cur.execute(schema_sql)
+
         cur.close()
         connection.close()
         return True
