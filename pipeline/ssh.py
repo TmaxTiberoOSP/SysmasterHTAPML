@@ -7,15 +7,15 @@ def connect(hostname, username, password):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(hostname, username=username, password=password)
+        logger.info(f"SSH 연결 성공 at {username}@{hostname}")
         return ssh
     except Exception as e:
         logger.error(f"SSH 연결 실패: {e}")
         return None
 
-
 def run_remote_command(ssh, command):
     try:
-        stdin, stdout, stderr = ssh.exec_command(command)
+        stdin, stdout, stderr = ssh.exec_command(command, get_pty=True)
         exit_status = stdout.channel.recv_exit_status()
         if exit_status == 0:
             return True, stdout.read().decode('utf-8')
